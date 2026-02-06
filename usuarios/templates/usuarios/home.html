@@ -1,0 +1,33 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Park Pass</title>
+<link rel="stylesheet" href="{% static 'usuarios/css/home.css' %}">
+
+</head>
+<body>
+
+<div class="container">
+
+    <h1>PARK PASS</h1>
+    <p class="subtitle">El boleto digital que siempre está contigo</p>
+
+    <div class="image-placeholder">
+    <img src="{% static 'usuarios/img/logo.jpg' %}" alt="Logo Park Pass">
+</div>
+
+
+    {% if user.is_authenticated %}
+        <p class="subtitle">Bienvenido, <strong>{{ user.username }}</strong></p>
+        <a href="{% url 'logout' %}" class="btn logout">Cerrar sesión</a>
+    {% else %}
+        <a href="{% url 'login' %}" class="btn login">Iniciar sesión</a>
+        <a href="{% url 'registro' %}" class="btn registro">Registrarme</a>
+    {% endif %}
+
+</div>
+
+</body>
+</html>

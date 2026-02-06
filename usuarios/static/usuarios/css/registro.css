@@ -1,0 +1,83 @@
+/* RESET Y MODELO DE CAJA */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* BODY */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #eff6ff;
+    text-align: center;
+    padding-top: 80px;
+}
+
+/* CONTENEDOR */
+.container {
+    background-color: white;
+    width: 350px;
+    margin: auto;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+/* TITULO */
+h2 {
+    color: #061E29;
+    margin-bottom: 20px;
+}
+
+/* IMAGEN CIRCULAR */
+.image-placeholder {
+    width: 140px;
+    height: 140px;
+    background-color: #dbeafe;
+    border-radius: 50%;
+    margin: 0 auto 25px auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.image-placeholder img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* FORMULARIO */
+form {
+    width: 100%;
+}
+
+/* INPUTS */
+input {
+    width: 100%;
+    padding: 14px;
+    margin-top: 14px;
+    border-radius: 12px;
+    border: 1px solid #1D546D;
+    font-size: 14px;
+}
+
+/* BOTÓN */
+button {
+    width: 100%;
+    padding: 14px;
+    margin-top: 20px;
+    border-radius: 12px;
+    background-color: #5F9598;
+    color: white;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+}
+
+/* HOVER */
+button:hover {
+    background-color: #1D546D;
+}
