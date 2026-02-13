@@ -3,31 +3,73 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Park Pass</title>
-<link rel="stylesheet" href="{% static 'usuarios/css/home.css' %}">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ParkPass - Inicio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
+<body class="bg-gray-50 font-sans">
 
-<div class="container">
+    <nav class="flex justify-between items-center p-6 bg-white border-b shadow-sm">
+        <h1 class="text-2xl font-bold text-slate-800">ParkPass</h1>
+        <div>
+            {% if user.is_authenticated %}
+                <span class="mr-4 text-gray-600">Hola, <strong>{{ user.username }}</strong></span>
+                <a href="{% url 'logout' %}" class="text-red-500 hover:text-red-700 font-medium">Salir</a>
+            {% else %}
+                <a href="{% url 'login' %}" class="mr-4 text-slate-700 hover:text-black font-medium">Iniciar sesión</a>
+                <a href="{% url 'registro' %}" class="bg-slate-900 text-white px-4 py-2 rounded-md hover:bg-slate-800 transition-colors">Registrarme</a>
+            {% endif %}
+        </div>
+    </nav>
 
-    <h1>PARK PASS</h1>
-    <p class="subtitle">El boleto digital que siempre está contigo</p>
+    <header class="text-center py-20 px-4">
+        <h2 class="text-4xl md:text-5xl font-extrabold text-slate-900 mb-6 leading-tight">
+            La forma más rápida y segura <br class="hidden md:block"> de pagar tu estacionamiento
+        </h2>
+        <p class="text-gray-500 text-lg mb-10 max-w-2xl mx-auto">
+            Escanea tu boleto, revisa tu tiempo y paga desde tu celular sin hacer filas.
+        </p>
+        
+        {% if user.is_authenticated %}
+            <a href="{% url 'pago_qr:index' %}" class="bg-slate-900 text-white px-10 py-4 rounded-lg text-lg font-semibold hover:bg-slate-800 transition-all shadow-lg">
+                Pagar boleto
+            </a>
+        {% else %}
+            <a href="{% url 'login' %}" class="bg-slate-900 text-white px-10 py-4 rounded-lg text-lg font-semibold hover:bg-slate-800 transition-all shadow-lg">
+                Comenzar ahora
+            </a>
+        {% endif %}
+    </header>
 
-    <div class="image-placeholder">
-    <img src="{% static 'usuarios/img/logo.jpg' %}" alt="Logo Park Pass">
-</div>
+    <section class="max-w-6xl mx-auto px-6 pb-24">
+        <h3 class="text-center text-3xl font-bold text-slate-800 mb-16">Funcionalidades</h3>
+        
+        <div class="grid md:grid-cols-3 gap-10">
+            <div class="bg-white p-10 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                <div class="w-12 h-12 bg-blue-50 rounded-lg mb-6 flex items-center justify-center">
+                    <span class="text-2xl">📱</span>
+                </div>
+                <h4 class="font-bold text-slate-900 mb-4 text-xl">Validación automática</h4>
+                <p class="text-gray-600 leading-relaxed">Escanea el boleto del estacionamiento para conocer tu tiempo y costo en tiempo real.</p>
+            </div>
 
+            <div class="bg-white p-10 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                <div class="w-12 h-12 bg-green-50 rounded-lg mb-6 flex items-center justify-center">
+                    <span class="text-2xl">💳</span>
+                </div>
+                <h4 class="font-bold text-slate-900 mb-4 text-xl">Pago rápido</h4>
+                <p class="text-gray-600 leading-relaxed">Paga tu boleto directamente desde la app con tu método preferido de forma segura.</p>
+            </div>
 
-    {% if user.is_authenticated %}
-        <p class="subtitle">Bienvenido, <strong>{{ user.username }}</strong></p>
-        <a href="{% url 'logout' %}" class="btn logout">Cerrar sesión</a>
-    {% else %}
-        <a href="{% url 'login' %}" class="btn login">Iniciar sesión</a>
-        <a href="{% url 'registro' %}" class="btn registro">Registrarme</a>
-    {% endif %}
-
-</div>
+            <div class="bg-white p-10 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                <div class="w-12 h-12 bg-purple-50 rounded-lg mb-6 flex items-center justify-center">
+                    <span class="text-2xl">📊</span>
+                </div>
+                <h4 class="font-bold text-slate-900 mb-4 text-xl">Historial</h4>
+                <p class="text-gray-600 leading-relaxed">Consulta todos tus pagos y movimientos anteriores detalladamente en un solo lugar.</p>
+            </div>
+        </div>
+    </section>
 
 </body>
 </html>
