@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="{% static 'usuarios/css/login.css' %}?v=5">
 
 </head>
+
 <body>
 
 <div class="container">
@@ -16,19 +17,52 @@
         <img src="{% static 'usuarios/img/logo.jpg' %}" alt="Logo">
     </div>
 
-    <form method="POST">
-        {% csrf_token %}
+  <form method="POST">
+    {% csrf_token %}
 
-        <input type="text" name="username" placeholder="Usuario" required>
-        <input type="password" name="password" placeholder="Contraseña" required>
+    <input type="text" name="username" placeholder="Usuario" required>
+    <input type="password" name="password" placeholder="Contraseña" required>
 
-        {% if error %}
-            <p style="color:red;">{{ error }}</p>
-        {% endif %}
+    {% if error %}
+        <p style="color:red;">{{ error }}</p>
+    {% endif %}
 
-        <button type="submit">Entrar</button>
-    </form>
+    <button type="submit">Entrar</button>
+
+    <!-- 👇 AQUÍ VA -->
+    <div style="margin-top:10px;">
+        <a href="{% url 'password_reset' %}">¿Olvidaste tu contraseña?</a>
+    </div>
+
+</form>
+
 </div>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="notification" id="notification">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const notification = document.getElementById("notification");
+
+    if (notification) {
+        notification.style.display = "block";
+
+        setTimeout(() => {
+            notification.style.opacity = "0";
+        }, 3000);
+
+        setTimeout(() => {
+            notification.style.display = "none";
+        }, 3500);
+    }
+});
+</script>
 
 
 </body>

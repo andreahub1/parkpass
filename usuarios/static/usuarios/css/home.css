@@ -81,3 +81,19 @@
             background-color: #93c5fd;
             color: #F3F4F4;
         }
+
+
+        .register-text {
+    margin-left: 10px;
+    font-size: 14px;
+}
+
+.register-text a {
+    color: #061E29;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.register-text a:hover {
+    text-decoration: underline;
+}

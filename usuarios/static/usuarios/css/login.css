@@ -80,3 +80,20 @@ button {
 button:hover {
     background-color: #163F52;
 }
+
+.notification {
+    display: none;
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #28a745;
+    color: white;
+    padding: 15px 30px;
+    border-radius: 8px;
+    font-size: 14px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    z-index: 9999;
+    opacity: 1;
+    transition: opacity 0.5s ease;
+}

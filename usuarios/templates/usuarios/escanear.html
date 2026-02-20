@@ -1,0 +1,112 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Escanear QR</title>
+    <link rel="stylesheet" href="{% static 'usuarios/css/escanear.css' %}">
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+    <h1>ParkPass</h1>
+    <a href="{% url 'logout' %}" class="logout">Cerrar sesión</a>
+</header>
+
+<main class="main">
+
+    <h2 class="title">Escanear QR</h2>
+
+    <!-- CUADRO LIMPIO -->
+    <div class="scanner-box">
+    <div id="reader"></div>
+    </div>
+
+    <a href="{% url 'inicio' %}" class="cancel-btn">
+    Cancelar
+</a>
+
+    <div class="form-group">
+        <label>Monto a pagar</label>
+        <input type="text" id="montoInput" value="$ 0.00" disabled>
+    </div>
+
+    <div class="form-group">
+        <label>Método de pago</label>
+        <select>
+            <option>Débito</option>
+            <option>Crédito</option>
+            <option>PayPal</option>
+        </select>
+    </div>
+
+    <button class="pay-btn" disabled>Realizar pago</button>
+
+</main>
+
+
+<footer class="footer">
+    ParkPass - Todos los derechos reservados
+</footer>
+
+<!-- LIBRERÍA QR -->
+<script src="https://unpkg.com/html5-qrcode"></script>
+
+<script>
+let escaneado = false;
+const html5QrCode = new Html5Qrcode("reader");
+
+function onScanSuccess(decodedText) {
+
+    if (escaneado) return;
+    escaneado = true;
+
+    console.log("QR detectado:", decodedText);
+
+    html5QrCode.stop(); // Detiene cámara después de leer
+
+    fetch(`/buscar-boleto/${decodedText}/`)
+        .then(response => response.json())
+        .then(data => {
+
+            if (data.error) {
+                alert("Boleto no encontrado");
+                escaneado = false;
+                startScanner();
+            } else {
+                document.getElementById("montoInput").value = "$ " + data.monto;
+                document.querySelector(".pay-btn").disabled = false;
+            }
+
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            escaneado = false;
+            startScanner();
+        });
+}
+
+function startScanner() {
+    Html5Qrcode.getCameras().then(devices => {
+        if (devices && devices.length) {
+            const cameraId = devices[0].id; // usa primera cámara automáticamente
+            html5QrCode.start(
+                cameraId,
+                {
+                    fps: 10,
+                    qrbox: 250
+                },
+                onScanSuccess
+            );
+        }
+    }).catch(err => {
+        console.error("Error al iniciar cámara", err);
+    });
+}
+
+startScanner();
+</script>
+
+</body>
+</html>

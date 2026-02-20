@@ -24,8 +24,10 @@
         <a href="{% url 'logout' %}" class="btn logout">Cerrar sesión</a>
     {% else %}
         <a href="{% url 'login' %}" class="btn login">Iniciar sesión</a>
-        <a href="{% url 'registro' %}" class="btn registro">Registrarme</a>
-    {% endif %}
+ <span class="register-text">
+        ¿No tienes cuenta?
+        <a href="{% url 'registro' %}">Regístrate aquí</a>
+    </span>    {% endif %}
 
 </div>
 

@@ -1,0 +1,70 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>ParkPass</title>
+    <link rel="stylesheet" href="{% static 'usuarios/css/inicio.css' %}">
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+    <h1>ParkPass</h1>
+    <a href="{% url 'logout' %}" class="logout">Cerrar sesión</a>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+    <h2>La forma más rápida y segura de pagar tu estacionamiento</h2>
+    <p>Escanea tu boleto, revisa tu tiempo y paga desde tu celular.</p>
+
+    <a href="{% url 'escanear' %}" class="btn-primary">
+        Pagar boleto
+    </a>
+</section>
+
+<!-- FUNCIONALIDADES -->
+<section class="features">
+    <h3>Funcionalidades</h3>
+
+    <div class="cards">
+
+        <div class="card">
+            <h4>Validación automática</h4>
+            <p>Escanea el boleto del estacionamiento para conocer tu tiempo y costo.</p>
+        </div>
+
+        <div class="card">
+            <h4>Pago rápido</h4>
+            <p>Paga tu boleto directamente desde la app sin hacer filas.</p>
+        </div>
+
+        <div class="card">
+            <h4>Historial</h4>
+            <p>Consulta tus pagos y movimientos anteriores fácilmente.</p>
+        </div>
+
+    </div>
+
+</section>
+
+<!-- CONTACTO -->
+<section class="contact">
+    <h3>Contacto</h3>
+    <p>¿Tienes dudas o sugerencias? Escríbenos.</p>
+
+    <form>
+        <input type="text" placeholder="Nombre">
+        <input type="email" placeholder="Correo electrónico">
+        <textarea placeholder="Escribe tu mensaje..."></textarea>
+        <button type="submit">Enviar</button>
+    </form>
+</section>
+
+<footer class="footer">
+    © 2026 ParkPass - Todos los derechos reservados.
+</footer>
+
+</body>
+</html>
