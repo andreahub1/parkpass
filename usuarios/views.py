@@ -3,7 +3,8 @@ from django.contrib.auth import authenticate, login as auth_login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-
+from django.core.mail import send_mail
+from django.conf import settings
 
 # 🏠 HOME PÚBLICO (login / registro)
 def home(request):
@@ -78,3 +79,66 @@ def inicio(request):
 @login_required
 def escanear_qr(request):
     return render(request, 'usuarios/escanear.html')
+
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib import messages
+from boletos.models import Boleto
+
+def procesar_pago(request, codigo):
+    boleto = get_object_or_404(Boleto, codigo=codigo)
+
+    if request.method == "POST":
+        boleto.pagado = True
+        boleto.save()
+
+        messages.success(request,  "Pago realizado con éxito. Tienes 15 minutos para salir del estacionamiento.")
+        return redirect("inicio")
+
+    metodo = request.GET.get("metodo")
+
+    return render(request, "usuarios/procesar_pago.html", {
+        "boleto": boleto,
+        "metodo": metodo
+    })
+    
+    
+from .models import Contacto
+from django.contrib import messages
+
+def inicio(request):
+
+    if request.method == "POST":
+        nombre = request.POST.get("nombre")
+        correo = request.POST.get("correo")
+        mensaje = request.POST.get("mensaje")
+
+        if nombre and correo and mensaje:
+            Contacto.objects.create(
+                nombre=nombre,
+                correo=correo,
+                mensaje=mensaje
+            )
+
+            # 📧 Enviar correo
+            asunto = "Nuevo mensaje de contacto - ParkPass"
+            cuerpo = f"""
+            Nombre: {nombre}
+            Correo: {correo}
+
+            Mensaje:
+            {mensaje}
+            """
+
+            send_mail(
+                asunto,
+                cuerpo,
+                settings.EMAIL_HOST_USER,
+                ['andrea.ledesmalopez@cesunbc.edu.mx'],  # AQUI VA EL CORREO QUE RECIBE
+                fail_silently=False,
+            )
+
+            messages.success(request, "Mensaje enviado correctamente ✅")
+            return redirect("inicio")
+
+    return render(request, "usuarios/inicio.html")

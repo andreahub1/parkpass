@@ -1,6 +1,7 @@
 from django.http import JsonResponse
 from django.utils import timezone
 from .models import Boleto
+from django.shortcuts import render, get_object_or_404
 
 
 def buscar_boleto(request, uuid):
@@ -29,3 +30,13 @@ def buscar_boleto(request, uuid):
 
     except Boleto.DoesNotExist:
         return JsonResponse({"error": "No existe"})
+
+
+def procesar_pago(request, id):
+    boleto = get_object_or_404(Boleto, id=id)
+    metodo = request.GET.get("metodo")
+
+    return render(request, "procesar_pago.html", {
+        "boleto": boleto,
+        "metodo": metodo
+    })

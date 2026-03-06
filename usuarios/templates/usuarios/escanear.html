@@ -34,16 +34,16 @@
 
     <div class="form-group">
         <label>Método de pago</label>
-        <select>
-            <option>Débito</option>
-            <option>Crédito</option>
-            <option>PayPal</option>
-        </select>
+      <select id="metodoPago">
+    <option value="tarjeta">Tarjeta Crédito/Débito</option>
+    <option value="paypal">PayPal</option>
+</select>
     </div>
 
-    <button class="pay-btn" disabled>Realizar pago</button>
-
-</main>
+    <button id="payBtn" class="pay-btn" disabled>
+    Realizar pago
+</button>
+    </main>
 
 
 <footer class="footer">
@@ -51,62 +51,72 @@
 </footer>
 
 <!-- LIBRERÍA QR -->
-<script src="https://unpkg.com/html5-qrcode"></script>
+<script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 
 <script>
+let html5QrCode;
 let escaneado = false;
-const html5QrCode = new Html5Qrcode("reader");
-
-function onScanSuccess(decodedText) {
-
-    if (escaneado) return;
-    escaneado = true;
-
-    console.log("QR detectado:", decodedText);
-
-    html5QrCode.stop(); // Detiene cámara después de leer
-
-    fetch(`/buscar-boleto/${decodedText}/`)
-        .then(response => response.json())
-        .then(data => {
-
-            if (data.error) {
-                alert("Boleto no encontrado");
-                escaneado = false;
-                startScanner();
-            } else {
-                document.getElementById("montoInput").value = "$ " + data.monto;
-                document.querySelector(".pay-btn").disabled = false;
-            }
-
-        })
-        .catch(error => {
-            console.error("Error:", error);
-            escaneado = false;
-            startScanner();
-        });
-}
+let boletoId = null;
 
 function startScanner() {
+    html5QrCode = new Html5Qrcode("reader");
+
     Html5Qrcode.getCameras().then(devices => {
         if (devices && devices.length) {
-            const cameraId = devices[0].id; // usa primera cámara automáticamente
+
+            const cameraId = devices[0].id;
+
             html5QrCode.start(
                 cameraId,
                 {
                     fps: 10,
-                    qrbox: 250
+                    qrbox: { width: 250, height: 250 }
                 },
-                onScanSuccess
+                (decodedText) => {
+
+                    if (escaneado) return;
+                    escaneado = true;
+                    boletoId = decodedText;
+
+                    console.log("QR detectado:", decodedText);
+
+                    html5QrCode.stop();
+
+                    fetch(`/buscar-boleto/${decodedText}/`)
+                        .then(response => response.json())
+                        .then(data => {
+
+                            if (data.error) {
+                                alert("Boleto no encontrado");
+                                escaneado = false;
+                                startScanner();
+                            } else {
+                                document.getElementById("montoInput").value = "$ " + data.monto;
+                                document.getElementById("payBtn").disabled = false;
+                            }
+
+                        })
+                        .catch(error => {
+                            console.error("Error:", error);
+                            escaneado = false;
+                            startScanner();
+                        });
+                }
             );
         }
-    }).catch(err => {
-        console.error("Error al iniciar cámara", err);
     });
 }
 
+document.getElementById("payBtn").addEventListener("click", function() {
+
+    if (!boletoId) return;
+
+    const metodo = document.getElementById("metodoPago").value;
+
+    window.location.href = `/procesar-pago/${boletoId}/?metodo=${metodo}`;
+});
+
 startScanner();
 </script>
-
 </body>
 </html>

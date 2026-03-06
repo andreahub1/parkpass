@@ -1,3 +1,18 @@
+{% if messages %}
+    {% for message in messages %}
+        <div class="toast-notification" id="toast">
+            <div class="toast-content">
+                <span class="toast-icon">✔</span>
+                <span class="toast-text">
+                    {{ message }}
+                </span>
+            </div>
+            <div class="toast-progress"></div>
+        </div>
+    {% endfor %}
+{% endif %}
+
+
 {% load static %}
 <!DOCTYPE html>
 <html lang="es">
@@ -54,17 +69,32 @@
     <h3>Contacto</h3>
     <p>¿Tienes dudas o sugerencias? Escríbenos.</p>
 
-    <form>
-        <input type="text" placeholder="Nombre">
-        <input type="email" placeholder="Correo electrónico">
-        <textarea placeholder="Escribe tu mensaje..."></textarea>
+    <form method="POST">
+        {% csrf_token %}
+        <input type="text" name="nombre" placeholder="Nombre" required>
+        <input type="email" name="correo" placeholder="Correo electrónico" required>
+        <textarea name="mensaje" placeholder="Escribe tu mensaje..." required></textarea>
         <button type="submit">Enviar</button>
     </form>
 </section>
+
 
 <footer class="footer">
     © 2026 ParkPass - Todos los derechos reservados.
 </footer>
 
+<!-- notificacion de 5 seg, pago realizado-->
+<script>
+setTimeout(function() {
+    const toast = document.getElementById("toast");
+    if (toast) {
+        toast.style.transition = "opacity 0.4s, transform 0.4s";
+        toast.style.opacity = "0";
+        toast.style.transform = "translateX(100%)";
+        setTimeout(() => toast.remove(), 400);
+    }
+}, 5000);
+</script>
+</script>
 </body>
 </html>

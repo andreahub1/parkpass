@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 from . import views
 
 urlpatterns = [
@@ -11,4 +11,6 @@ urlpatterns = [
     # 🔵 Área privada
     path('inicio/', views.inicio, name='inicio'),          # Home azul
     path('escanear/', views.escanear_qr, name='escanear'), # Lector QR
+
+path('procesar-pago/<str:codigo>/', views.procesar_pago, name='procesar_pago'),
 ]
