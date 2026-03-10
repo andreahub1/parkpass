@@ -138,7 +138,7 @@ def inicio(request):
                 fail_silently=False,
             )
 
-            messages.success(request, "Mensaje enviado correctamente ✅")
+            messages.success(request, "Mensaje enviado correctamente")
             return redirect("inicio")
 
     return render(request, "usuarios/inicio.html")
