@@ -25,6 +25,15 @@
 
 <!-- HEADER -->
 <header class="header">
+
+
+    <!-- Boton para el admin-->
+     {% if user.username == "adminqr" %}
+            <a href="{% url 'generar_qr' %}" class="nav-link">Generar QR</a>
+        {% endif %}
+
+
+
     <h1>ParkPass</h1>
     <a href="{% url 'logout' %}" class="logout">Cerrar sesión</a>
 </header>

@@ -1,0 +1,131 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Generar QR</title>
+
+    <link rel="stylesheet" href="{% static 'usuarios/css/escanear.css' %}">
+
+    <style>
+        body{
+            margin:0;
+            font-family: Arial, sans-serif;
+            background:#f4f6f9;
+        }
+
+        /* HEADER */
+        .header{
+            background-color:white;
+            color:#061E29;
+            padding:18px 24px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            border-bottom:1px solid #e1e5e8;
+        }
+
+        .header h1{
+            font-size:18px;
+            font-weight:600;
+            margin:0;
+        }
+
+        .nav-links a{
+            text-decoration:none;
+            font-size:14px;
+            color:#061E29;
+            margin-left:15px;
+        }
+
+        .nav-links a:hover{
+            text-decoration:underline;
+        }
+
+        /* CONTENIDO */
+        .main{
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            height:80vh;
+        }
+
+        .container{
+            background:white;
+            padding:40px;
+            border-radius:16px;
+            box-shadow:0 10px 25px rgba(0,0,0,0.1);
+            text-align:center;
+            width:350px;
+        }
+
+        h2{
+            margin-bottom:20px;
+        }
+
+        button{
+            width:100%;
+            padding:12px;
+            background:#1D546D;
+            color:white;
+            border:none;
+            border-radius:10px;
+            cursor:pointer;
+            font-weight:bold;
+            margin-top:10px;
+        }
+
+        button:hover{
+            background:#163F52;
+        }
+
+        img{
+            margin-top:20px;
+        }
+
+        p{
+            margin-top:10px;
+            font-size:14px;
+            color:#555;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<header class="header">
+    <h1>ParkPass</h1>
+
+    <div class="nav-links">
+        <a href="{% url 'inicio' %}">Inicio</a>
+        <a href="{% url 'logout' %}">Cerrar sesión</a>
+    </div>
+</header>
+
+<!-- CONTENIDO -->
+<div class="main">
+    <div class="container">
+
+        <h2>Generar QR</h2>
+
+        <form method="POST">
+            {% csrf_token %}
+            <button type="submit">Generar QR</button>
+        </form>
+
+        {% if boleto %}
+            <h3>QR generado</h3>
+            <p>Código: {{ boleto.codigo }}</p>
+
+            {% if boleto.qr_imagen %}
+                <img src="{{ boleto.qr_imagen.url }}" width="200">
+            {% endif %}
+        {% endif %}
+
+    </div>
+</div>
+
+</body>
+</html>

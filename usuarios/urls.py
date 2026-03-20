@@ -1,4 +1,4 @@
-from django.urls import path, include
+from django.urls import path
 from . import views
 
 urlpatterns = [
@@ -9,8 +9,12 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
 
     # 🔵 Área privada
-    path('inicio/', views.inicio, name='inicio'),          # Home azul
-    path('escanear/', views.escanear_qr, name='escanear'), # Lector QR
+    path('inicio/', views.inicio, name='inicio'),
+    path('escanear/', views.escanear_qr, name='escanear'),
 
-path('procesar-pago/<str:codigo>/', views.procesar_pago, name='procesar_pago'),
+    # 💳 Pago
+    path('procesar-pago/<str:codigo>/', views.procesar_pago, name='procesar_pago'),
+
+    # 🔐 ADMIN QR
+    path('generar-qr/', views.generar_qr, name='generar_qr'),
 ]

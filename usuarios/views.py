@@ -142,3 +142,29 @@ def inicio(request):
             return redirect("inicio")
 
     return render(request, "usuarios/inicio.html")
+
+# GENERAR QR DESDE LA PAG
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from boletos.models import Boleto
+import uuid
+
+@login_required
+def generar_qr(request):
+
+    # 🔒 SOLO usuario adminqr
+    if request.user.username != "adminqr":
+        return redirect("inicio")
+
+    if request.method == "POST":
+
+        boleto = Boleto.objects.create(
+            codigo=uuid.uuid4(),
+            monto=0  # 👈 valor por defecto, ya no se pide
+        )
+
+        return render(request, "usuarios/generar_qr.html", {
+            "boleto": boleto
+        })
+
+    return render(request, "usuarios/generar_qr.html")

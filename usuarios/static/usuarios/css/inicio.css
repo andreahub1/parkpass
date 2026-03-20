@@ -225,3 +225,12 @@ body {
     from { width: 100%; }
     to { width: 0%; }
 }
+
+
+/* generar qr HEADER (mismo estilo) */
+.nav-link {
+    text-decoration: none;
+    font-size: 14px;
+    color: #061E29;
+    margin-right: 15px;
+}
