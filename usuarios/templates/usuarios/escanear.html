@@ -5,10 +5,12 @@
     <meta charset="UTF-8">
     <title>Escanear QR</title>
     <link rel="stylesheet" href="{% static 'usuarios/css/escanear.css' %}">
+
+    <!-- 🔥 SWEET ALERT -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
 
-<!-- HEADER -->
 <header class="header">
     <h1>ParkPass</h1>
     <a href="{% url 'logout' %}" class="logout">Cerrar sesión</a>
@@ -18,105 +20,208 @@
 
     <h2 class="title">Escanear QR</h2>
 
-    <!-- CUADRO LIMPIO -->
     <div class="scanner-box">
-    <div id="reader"></div>
+        <div id="reader"></div>
     </div>
 
     <a href="{% url 'inicio' %}" class="cancel-btn">
-    Cancelar
-</a>
+        Cancelar
+    </a>
 
     <div class="form-group">
         <label>Monto a pagar</label>
         <input type="text" id="montoInput" value="$ 0.00" disabled>
     </div>
 
-    <div class="form-group">
-        <label>Método de pago</label>
-      <select id="metodoPago">
-    <option value="tarjeta">Tarjeta Crédito/Débito</option>
-    <option value="paypal">PayPal</option>
-</select>
+    <!-- PAYPAL -->
+    <div id="paypal-container" style="margin-top:20px; display:none;">
+        <div id="paypal-button-container"></div>
     </div>
 
-    <button id="payBtn" class="pay-btn" disabled>
-    Realizar pago
-</button>
-    </main>
-
+</main>
 
 <footer class="footer">
     ParkPass - Todos los derechos reservados
 </footer>
 
-<!-- LIBRERÍA QR -->
-<script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+<!-- QR -->
+<script src="https://unpkg.com/html5-qrcode"></script>
+
+<!-- PAYPAL -->
+<script src="https://www.paypal.com/sdk/js?client-id=Ac_1GSNTbEA-7Ge-92eFMOaHAcAvB53gT5RSN-JNWfaZbdBCRfpI7PZb1l_drG-WmYIbNzM9Wl98qhFl&currency=MXN"></script>
 
 <script>
 let html5QrCode;
 let escaneado = false;
 let boletoId = null;
+let paypalRenderizado = false;
 
 function startScanner() {
     html5QrCode = new Html5Qrcode("reader");
 
     Html5Qrcode.getCameras().then(devices => {
-        if (devices && devices.length) {
+        if (devices.length) {
 
             const cameraId = devices[0].id;
 
             html5QrCode.start(
                 cameraId,
-                {
-                    fps: 10,
-                    qrbox: { width: 250, height: 250 }
-                },
+                { fps: 10, qrbox: { width: 250, height: 250 } },
                 (decodedText) => {
 
                     if (escaneado) return;
                     escaneado = true;
                     boletoId = decodedText;
 
-                    console.log("QR detectado:", decodedText);
-
                     html5QrCode.stop();
 
                     fetch(`/buscar-boleto/${decodedText}/`)
-                        .then(response => response.json())
+                        .then(res => res.json())
                         .then(data => {
 
                             if (data.error) {
-                                alert("Boleto no encontrado");
+                                Swal.fire({
+                                    icon: 'warning',
+                                    title: 'Boleto no encontrado',
+                                    text: 'Intenta escanear nuevamente',
+                                    confirmButtonColor: '#1D546D'
+                                });
+
                                 escaneado = false;
                                 startScanner();
-                            } else {
-                                document.getElementById("montoInput").value = "$ " + data.monto;
-                                document.getElementById("payBtn").disabled = false;
+                                return;
+                            }
+
+                            // 🔴 YA PAGADO
+                            if (data.pagado) {
+                                Swal.fire({
+                                    icon: 'info',
+                                    title: 'Boleto ya pagado',
+                                    text: 'Este boleto ya fue utilizado',
+                                    confirmButtonColor: '#1D546D'
+                                });
+
+                                document.getElementById("montoInput").value = "$ 0.00";
+                                document.getElementById("paypal-container").style.display = "none";
+                                return;
+                            }
+
+                            // 🟢 MOSTRAR MONTO
+                            document.getElementById("montoInput").value = "$ " + data.monto;
+
+                            // 🟢 MOSTRAR PAYPAL
+                            document.getElementById("paypal-container").style.display = "block";
+
+                            let monto = parseFloat(data.monto).toFixed(2);
+
+                            if (!paypalRenderizado) {
+                                paypalRenderizado = true;
+
+                                paypal.Buttons({
+
+                                    createOrder: (data, actions) => {
+                                        return actions.order.create({
+                                            purchase_units: [{
+                                                amount: { value: monto }
+                                            }]
+                                        });
+                                    },
+
+                                    onApprove: async function(data, actions) {
+                                        try {
+                                            await actions.order.capture();
+
+                                            const response = await fetch("/confirmar-pago/", {
+                                                method: "POST",
+                                                headers: {
+                                                    "Content-Type": "application/json",
+                                                    "X-CSRFToken": "{{ csrf_token }}"
+                                                },
+                                                body: JSON.stringify({
+                                                    boleto_id: boletoId
+                                                })
+                                            });
+
+                                            const result = await response.json();
+
+                                            if (result.status === "ok") {
+
+                                                Swal.fire({
+                                                    icon: 'success',
+                                                    title: 'Pago exitoso',
+                                                    text: 'Tiene 15 min para salir',
+                                                    confirmButtonColor: '#1D546D'
+                                                }).then(() => {
+                                                    window.location.href = "/inicio/";
+                                                });
+
+                                            } else {
+                                                Swal.fire({
+                                                    icon: 'error',
+                                                    title: 'Error',
+                                                    text: 'No se pudo registrar el pago',
+                                                    confirmButtonColor: '#1D546D'
+                                                });
+                                            }
+
+                                        } catch (error) {
+                                            console.error(error);
+
+                                            Swal.fire({
+                                                icon: 'error',
+                                                title: 'Error',
+                                                text: 'Ocurrió un problema en el pago',
+                                                confirmButtonColor: '#1D546D'
+                                            });
+                                        }
+                                    },
+
+                                    onCancel: function() {
+                                        Swal.fire({
+                                            icon: 'question',
+                                            title: 'Pago cancelado',
+                                            text: 'No se completó el pago',
+                                            confirmButtonColor: '#1D546D'
+                                        });
+                                    },
+
+                                    onError: function(err) {
+                                        console.error(err);
+
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Error con PayPal',
+                                            text: 'Intenta nuevamente',
+                                            confirmButtonColor: '#1D546D'
+                                        });
+                                    }
+
+                                }).render('#paypal-button-container');
                             }
 
                         })
-                        .catch(error => {
-                            console.error("Error:", error);
+                        .catch(err => {
+                            console.error(err);
+
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'Error al escanear',
+                                confirmButtonColor: '#1D546D'
+                            });
+
                             escaneado = false;
                             startScanner();
                         });
+
                 }
             );
         }
     });
 }
 
-document.getElementById("payBtn").addEventListener("click", function() {
-
-    if (!boletoId) return;
-
-    const metodo = document.getElementById("metodoPago").value;
-
-    window.location.href = `/procesar-pago/${boletoId}/?metodo=${metodo}`;
-});
-
 startScanner();
 </script>
+
 </body>
 </html>
