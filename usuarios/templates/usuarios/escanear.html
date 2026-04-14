@@ -6,7 +6,7 @@
     <title>Escanear QR</title>
     <link rel="stylesheet" href="{% static 'usuarios/css/escanear.css' %}">
 
-    <!-- 🔥 SWEET ALERT -->
+    <!-- SWEET ALERT -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
@@ -33,9 +33,19 @@
         <input type="text" id="montoInput" value="$ 0.00" disabled>
     </div>
 
-    <!-- PAYPAL -->
-    <div id="paypal-container" style="margin-top:20px; display:none;">
-        <div id="paypal-button-container"></div>
+    <!-- 🔥 CONTENEDOR DE PAGOS -->
+    <div id="pagos-container" style="margin-top:25px; display:none;">
+
+        <!-- 🟢 MERCADO PAGO -->
+        <button id="mp-btn" class="mp-btn">
+            Pagar con Mercado Pago
+        </button>
+
+        <!-- 🟡 PAYPAL -->
+        <div id="paypal-container" style="margin-top:20px;">
+            <div id="paypal-button-container"></div>
+        </div>
+
     </div>
 
 </main>
@@ -102,18 +112,24 @@ function startScanner() {
                                 });
 
                                 document.getElementById("montoInput").value = "$ 0.00";
-                                document.getElementById("paypal-container").style.display = "none";
+                                document.getElementById("pagos-container").style.display = "none";
                                 return;
                             }
 
                             // 🟢 MOSTRAR MONTO
                             document.getElementById("montoInput").value = "$ " + data.monto;
 
-                            // 🟢 MOSTRAR PAYPAL
-                            document.getElementById("paypal-container").style.display = "block";
+                            // 🟢 MOSTRAR BOTONES
+                            document.getElementById("pagos-container").style.display = "block";
 
                             let monto = parseFloat(data.monto).toFixed(2);
 
+                            // 🔥 BOTÓN MERCADO PAGO
+                            document.getElementById("mp-btn").onclick = function() {
+                                window.location.href = `/pago-mercado/${boletoId}/`;
+                            };
+
+                            // 🔥 PAYPAL
                             if (!paypalRenderizado) {
                                 paypalRenderizado = true;
 
@@ -174,26 +190,6 @@ function startScanner() {
                                                 confirmButtonColor: '#1D546D'
                                             });
                                         }
-                                    },
-
-                                    onCancel: function() {
-                                        Swal.fire({
-                                            icon: 'question',
-                                            title: 'Pago cancelado',
-                                            text: 'No se completó el pago',
-                                            confirmButtonColor: '#1D546D'
-                                        });
-                                    },
-
-                                    onError: function(err) {
-                                        console.error(err);
-
-                                        Swal.fire({
-                                            icon: 'error',
-                                            title: 'Error con PayPal',
-                                            text: 'Intenta nuevamente',
-                                            confirmButtonColor: '#1D546D'
-                                        });
                                     }
 
                                 }).render('#paypal-button-container');

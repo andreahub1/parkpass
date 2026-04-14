@@ -124,5 +124,5 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'andrea.ledesmalopez@cesunbc.edu.mx'
-EMAIL_HOST_PASSWORD = 'eedc rrbs nlih fbhh'
+EMAIL_HOST_PASSWORD = 'bcgn yfgk seih ayqv'
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
